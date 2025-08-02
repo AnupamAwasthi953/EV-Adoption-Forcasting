@@ -17,6 +17,7 @@ Electric Vehicle (EV) Total: The sum of Battery Electric Vehicles (BEVs) and Plu
 Non-Electric Vehicle Total: The count of vehicles that are not electric vehicles.
 Total Vehicles: All powered vehicles registered in the county. This includes electric vehicles.
 Percent Electric Vehicles: Comparison of electric vehicles versus their non-electric counterparts.
+
 Dataset Link: https://www.kaggle.com/datasets/sahirmaharajj/electric-vehicle-population-size-2024/data
 
 AICTE Internship Project

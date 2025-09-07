@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EV Adoption Forecasting Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <header class="dashboard-header">
+            <h1>EV Adoption Forecasting Dashboard</h1>
+            <p class="header-subtitle">Analyze electric vehicle adoption trends and generate forecasts for strategic planning</p>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="tab-navigation">
+            <button class="tab-btn active" data-tab="overview">Overview & Data Explorer</button>
+            <button class="tab-btn" data-tab="trends">Trend Analysis</button>
+            <button class="tab-btn" data-tab="forecasting">Forecasting Model</button>
+            <button class="tab-btn" data-tab="regional">Regional Analysis</button>
+            <button class="tab-btn" data-tab="about">About & Methodology</button>
+        </nav>
+
+        <!-- Tab Content Container -->
+        <main class="tab-content-container">
+            <!-- Overview Tab -->
+            <div id="overview-tab" class="tab-content active">
+                <div class="metrics-grid">
+                    <div class="card metric-card">
+                        <div class="metric-value" id="total-evs">0</div>
+                        <div class="metric-label">Total EV Registrations</div>
+                    </div>
+                    <div class="card metric-card">
+                        <div class="metric-value" id="avg-growth">0%</div>
+                        <div class="metric-label">Average Growth Rate</div>
+                    </div>
+                    <div class="card metric-card">
+                        <div class="metric-value" id="top-state">-</div>
+                        <div class="metric-label">Leading State</div>
+                    </div>
+                    <div class="card metric-card">
+                        <div class="metric-value" id="total-counties">0</div>
+                        <div class="metric-label">Counties Tracked</div>
+                    </div>
+                </div>
+
+                <div class="data-explorer-section">
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>Data Explorer</h3>
+                            <div class="filter-controls">
+                                <select class="form-control" id="state-filter">
+                                    <option value="">All States</option>
+                                </select>
+                                <select class="form-control" id="vehicle-type-filter">
+                                    <option value="">All Vehicle Types</option>
+                                    <option value="Passenger">Passenger</option>
+                                    <option value="Truck">Truck</option>
+                                </select>
+                                <input type="date" class="form-control" id="date-from">
+                                <input type="date" class="form-control" id="date-to">
+                                <button class="btn btn--primary" id="apply-filters">Apply Filters</button>
+                            </div>
+                        </div>
+                        <div class="card__body">
+                            <div class="table-container">
+                                <table class="data-table" id="ev-data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>County</th>
+                                            <th>State</th>
+                                            <th>Vehicle Type</th>
+                                            <th>BEVs</th>
+                                            <th>PHEVs</th>
+                                            <th>Total EVs</th>
+                                            <th>% Electric</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trend Analysis Tab -->
+            <div id="trends-tab" class="tab-content">
+                <div class="chart-controls">
+                    <div class="card">
+                        <div class="card__body">
+                            <div class="control-row">
+                                <div class="form-group">
+                                    <label class="form-label">Time Period</label>
+                                    <select class="form-control" id="time-period">
+                                        <option value="all">All Time</option>
+                                        <option value="2023">2023</option>
+                                        <option value="2022">2022</option>
+                                        <option value="2021">2021</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Metric</label>
+                                    <select class="form-control" id="metric-type">
+                                        <option value="ev_total">Total EVs</option>
+                                        <option value="percent_electric">Percentage Electric</option>
+                                        <option value="bevs">BEVs Only</option>
+                                        <option value="phevs">PHEVs Only</option>
+                                    </select>
+                                </div>
+                                <button class="btn btn--primary" id="update-trends">Update Charts</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="charts-grid">
+                    <div class="card chart-card">
+                        <div class="card__header">
+                            <h3>EV Adoption Over Time</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="chart-container" style="position: relative; height: 300px;">
+                                <canvas id="time-series-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card chart-card">
+                        <div class="card__header">
+                            <h3>EV Adoption by State</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="chart-container" style="position: relative; height: 300px;">
+                                <canvas id="state-bar-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card chart-card">
+                        <div class="card__header">
+                            <h3>BEVs vs PHEVs Distribution</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="chart-container" style="position: relative; height: 300px;">
+                                <canvas id="bev-phev-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card chart-card">
+                        <div class="card__header">
+                            <h3>Electric Vehicle Penetration</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="chart-container" style="position: relative; height: 300px;">
+                                <canvas id="penetration-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Forecasting Tab -->
+            <div id="forecasting-tab" class="tab-content">
+                <div class="forecasting-form">
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>Generate EV Adoption Forecast</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label">Select Region</label>
+                                    <select class="form-control" id="forecast-region">
+                                        <option value="">Choose County/State...</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Forecast Months: <span id="months-value">12</span></label>
+                                    <input type="range" class="form-control" id="forecast-months" min="1" max="24" value="12">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Vehicle Type</label>
+                                    <select class="form-control" id="forecast-vehicle-type">
+                                        <option value="Passenger">Passenger</option>
+                                        <option value="Truck">Truck</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <button class="btn btn--primary btn--full-width" id="generate-forecast">Generate Forecast</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="forecast-results" class="hidden">
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>Forecast Results</h3>
+                            <button class="btn btn--secondary" id="download-forecast">Download Results</button>
+                        </div>
+                        <div class="card__body">
+                            <div class="chart-container" style="position: relative; height: 400px;">
+                                <canvas id="forecast-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>Forecast Data</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="table-container">
+                                <table class="data-table" id="forecast-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Month</th>
+                                            <th>Predicted EVs</th>
+                                            <th>Lower Bound</th>
+                                            <th>Upper Bound</th>
+                                            <th>Confidence</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Regional Analysis Tab -->
+            <div id="regional-tab" class="tab-content">
+                <div class="regional-overview">
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>State Performance Rankings</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="rankings-grid" id="state-rankings"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="regional-charts">
+                    <div class="card chart-card">
+                        <div class="card__header">
+                            <h3>State Comparison - Total EVs</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="chart-container" style="position: relative; height: 400px;">
+                                <canvas id="regional-comparison-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card chart-card">
+                        <div class="card__header">
+                            <h3>Growth Rate Comparison</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="chart-container" style="position: relative; height: 400px;">
+                                <canvas id="growth-comparison-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- About Tab -->
+            <div id="about-tab" class="tab-content">
+                <div class="about-grid">
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>Dataset Information</h3>
+                        </div>
+                        <div class="card__body">
+                            <p><strong>Data Source:</strong> Electric vehicle registration data across multiple states and counties</p>
+                            <p><strong>Time Range:</strong> February 2017 - February 2024</p>
+                            <p><strong>Coverage:</strong> 269 counties across 5+ states</p>
+                            <p><strong>Total Records:</strong> 12,573 data points</p>
+                            <p><strong>Vehicle Types:</strong> Passenger vehicles and Trucks</p>
+                            <p><strong>EV Categories:</strong> Battery Electric Vehicles (BEVs) and Plug-in Hybrid Electric Vehicles (PHEVs)</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>Forecasting Methodology</h3>
+                        </div>
+                        <div class="card__body">
+                            <p>The forecasting model uses a time series approach with the following features:</p>
+                            <ul>
+                                <li><strong>Temporal Features:</strong> Months since start, seasonal patterns</li>
+                                <li><strong>Lag Features:</strong> Previous 1-3 months of EV totals</li>
+                                <li><strong>Rolling Statistics:</strong> 3-month moving averages</li>
+                                <li><strong>Growth Metrics:</strong> Percentage changes and growth slopes</li>
+                                <li><strong>Regional Encoding:</strong> County-specific patterns</li>
+                            </ul>
+                            <p>The model provides confidence intervals to indicate prediction uncertainty.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>Data Definitions</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="definitions-list">
+                                <div class="definition-item">
+                                    <strong>BEVs:</strong> Battery Electric Vehicles - fully electric vehicles
+                                </div>
+                                <div class="definition-item">
+                                    <strong>PHEVs:</strong> Plug-in Hybrid Electric Vehicles - vehicles with both electric and gasoline power
+                                </div>
+                                <div class="definition-item">
+                                    <strong>EV Total:</strong> Combined count of BEVs and PHEVs
+                                </div>
+                                <div class="definition-item">
+                                    <strong>Percent Electric:</strong> Percentage of total vehicles that are electric
+                                </div>
+                                <div class="definition-item">
+                                    <strong>Vehicle Primary Use:</strong> Classification of vehicle usage (Passenger or Truck)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>Limitations & Assumptions</h3>
+                        </div>
+                        <div class="card__body">
+                            <ul>
+                                <li>Forecasts assume continuation of current policy and market conditions</li>
+                                <li>External factors (economic changes, new regulations) not explicitly modeled</li>
+                                <li>Model performance may vary by region based on historical data availability</li>
+                                <li>Predictions are statistical estimates with inherent uncertainty</li>
+                                <li>Data quality depends on reporting consistency across jurisdictions</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Loading Modal -->
+        <div id="loading-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="loading-spinner"></div>
+                <p>Processing data...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
